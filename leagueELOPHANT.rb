@@ -4,11 +4,16 @@ require 'data_mapper'
 
 class Game
 
-	attr_accessor :champion, :result
+	attr_accessor :champion, :outcome, :length
 
-	def initialize(outcome, length)
+	def initialize(champion, outcome, length)
+		@champion = champion
 		@outcome = outcome
 		@length = length
+	end
+
+	def state
+		return @outcome + " of " + @length  + " minutes long"
 	end
 
 	def KDA(kills,deaths,assists)
@@ -18,7 +23,7 @@ class Game
 	end
 
 	def returnKDA
-		print @kills + " kills " + @deaths + " deaths " + @assists +  " assists\n"
+		return @kills + " kills " + @deaths + " deaths " + @assists +  " assists\n"
 	end
 
 end
@@ -34,31 +39,30 @@ championList.shift #shift to remove string that isn't champ name
 
 gameStateData = doc.css('.game-info span').select{ |g| g.text != "0"}
 
-# puts gameState
-
 killsList = doc.css('.kills span') #returns "X kills"
 deathsList = doc.css('.deaths span')
 assistsList = doc.css('.assists span')
 
+
+
 gameState = []
 (0..19).step(2) do |i|
-	gameState << [[gameStateData[i].text, gameStateData[i+1].text]] #[Win/Lose, Length]
+	gameState << [gameStateData[i].text, gameStateData[i+1].text] #[Win/Lose, Length]
 end	
 
 10.times do |i|
-	name = championList[i].content
+	champion = championList[i].content
+	outcome = gameState[i][0]
+	length = gameState[i][1]
+
 	kills = killsList[i].content[0] # returns just # of kills
 	deaths = deathsList[i].content[0]
 	assists = assistsList[i].content[0]
 
-	outcome = gameState[i][0]
-	length = gameState[i][1]
-	
-	game = Game.new(outcome, length)
-	game.champion = name
-	#puts game.champion
+
+	game = Game.new(champion, outcome, length)
 	game.KDA(kills, deaths, assists)
-	#game.returnKDA
+
 end
 
 
