@@ -6,7 +6,9 @@ class Game
 
 	attr_accessor :champion, :result
 
-	def initialize
+	def initialize(outcome, length)
+		@outcome = outcome
+		@length = length
 	end
 
 	def KDA(kills,deaths,assists)
@@ -19,9 +21,6 @@ class Game
 		print @kills + " kills " + @deaths + " deaths " + @assists +  " assists\n"
 	end
 
-
-
-
 end
 
 # Get a Nokogiri::HTML::Document for the page we’re interested in...
@@ -33,22 +32,31 @@ doc = Nokogiri::HTML(open('http://www.elophant.com/league-of-legends/summoner/na
 championList = doc.css('.title')
 championList.shift #shift to remove string that isn't champ name
 
-data = doc.css('.game-info')
+gameStateData = doc.css('.game-info span').select{ |g| g.text != "0"}
+
+# puts gameState
 
 killsList = doc.css('.kills span') #returns "X kills"
 deathsList = doc.css('.deaths span')
 assistsList = doc.css('.assists span')
 
+gameState = []
+(0..19).step(2) do |i|
+	gameState << [[gameStateData[i].text, gameStateData[i+1].text]] #[Win/Lose, Length]
+end	
 
 10.times do |i|
 	name = championList[i].content
 	kills = killsList[i].content[0] # returns just # of kills
 	deaths = deathsList[i].content[0]
 	assists = assistsList[i].content[0]
-	game = Game.new
+
+	outcome = gameState[i][0]
+	length = gameState[i][1]
+	
+	game = Game.new(outcome, length)
 	game.champion = name
 	#puts game.champion
-	puts data[i].content 
 	game.KDA(kills, deaths, assists)
 	#game.returnKDA
 end
