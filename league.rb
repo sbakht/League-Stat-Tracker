@@ -33,6 +33,10 @@ class Game
 		@experience = experience
 	end
 
+	def print
+		puts @champion + " " +  @outcome + " " + @length
+	end
+
 end
 
 # Get a Nokogiri::HTML::Document for the page we’re interested in...
@@ -95,24 +99,8 @@ gameData = doc.css('.box')
 	 	c.minions = game.minions
 	 	c.experience = game.experience
 	 	c.save
+
+	 	game.print
 	end
 
 end
-
-z = LeagueDB.all :order => :id.asc
-# z = LeagueDB.first(:champion => "Vladimir", :outcome => "Won Game")
-
-z.each do |x|
-	puts x.champion
-	# puts x.champion + " " + x.length + " " + x.kills
-	# puts x.kills
-	# puts x.deaths
-	# puts x.assists
-	# puts x.gold
-	# puts x.minions
-	# puts x.experience
-end
-
-
-
-
