@@ -4,7 +4,8 @@ require 'data_mapper'
 
 class Game
 
-	attr_accessor :champion, :outcome, :length, :kills, :assists, :deaths
+	attr_reader :champion, :outcome, :length, :kills, :assists, :deaths,
+	:gold, :minions, :experience
 
 	def initialize(champion, outcome, length)
 		@champion = champion
@@ -26,6 +27,12 @@ class Game
 		return @kills + " kills " + @deaths + " deaths " + @assists +  " assists\n"
 	end
 
+	def score(gold, minions, experience)
+		@gold = gold
+		@minions = minions
+		@experience = experience
+	end
+
 end
 
 # Get a Nokogiri::HTML::Document for the page we’re interested in...
@@ -34,68 +41,78 @@ doc = Nokogiri::HTML(open('http://www.elophant.com/league-of-legends/summoner/na
 
 # Do funky things with it using Nokogiri::XML::Node methods...
 
-championList = doc.css('.title')
-championList.shift #shift to remove string that isn't champ name
-
-gameStateData = doc.css('.game-info span').select{ |g| g.text != "0"}
-
-killsList = doc.css('.kills span') #returns "X kills"
-deathsList = doc.css('.deaths span')
-assistsList = doc.css('.assists span')
-
-scoresData = doc.css('.scores span')
-
-box = doc.css('.box')
-
-puts box.length
-puts box[11].css('.kills span')
-
-# scores = []
-# (0..59).step(6) do |i|
-# 	scores << [scoresData[i].text, scoresData[i+1].text, scoresData[i+2].text, scoresData[i+3].text, scoresData[i+4].text]
-# end
-10.times do |i|
-# puts scores[i]
-# puts box[i]
-# puts "\n\n"
-end
-
-# gameState = []
-# (0..19).step(2) do |i|
-# 	gameState << [gameStateData[i].text, gameStateData[i+1].text] #[Win/Lose, Length]
-# end	
-
-# 10.times do |i|
-# 	champion = championList[i].content
-# 	outcome = gameState[i][0]
-# 	length = gameState[i][1]
-
-# 	kills = killsList[i].content[0] # returns just # of kills
-# 	deaths = deathsList[i].content[0]
-# 	assists = assistsList[i].content[0]
-
-
-# 	game = Game.new(champion, outcome, length)
-# 	game.KDA(kills, deaths, assists)
-
-# end
-
-
 DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/league.db")
 
 class LeagueDB
 	include DataMapper::Resource
 	property :id, Serial
-	property :champion, Text, :required => false
+	property :champion, String, :required => true
+	property :outcome, String
+	property :length, String
 	property :kills, Integer
 	property :deaths, Integer
 	property :assists, Integer
+	property :gold, String
+	property :minions, Integer
+	property :experience, String
+
 end
 
 DataMapper.finalize.auto_upgrade!
 
-c = LeagueDB.new
-c.champion = "Lux"
-c.kills =  4
-c.save
+
+gameData = doc.css('.box')
+
+10.times do |i|
+ 	champion = gameData[i+2].css('.title').text
+ 	outcome = gameData[i+2].css('.game-info span').select{ |g| g.text.include?("Match")  }[0].text
+ 	length = gameData[i+2].css('.game-info span').select{ |g| g.text.include?(":")  }[0].text
+
+ 	kills = gameData[i+2].css('.kills span').text.match(/\d+/)[0].to_i # returns just # of kills
+ 	deaths = gameData[i+2].css('.deaths span').text.match(/\d+/)[0].to_i
+ 	assists = gameData[i+2].css('.assists span').text.match(/\d+/)[0].to_i
+
+ 	scores = gameData[i+2].css('.scores span').first(3) #Gold, Minions, Experience
+ 	gold = scores[0].text
+ 	minions = scores[1].text
+ 	experience = scores[2].text
+
+
+ 	game = Game.new(champion, outcome, length)
+ 	game.KDA(kills, deaths, assists)
+ 	game.score(gold, minions, experience)
+
+ 	#Checks if a game with these stats already exist, assuming that it is the same game when all these stats are the same
+ 	if !LeagueDB.first(:champion => game.champion, :outcome => game.outcome, :kills => game.kills, :deaths => game.deaths, :assists => game.assists)
+	 	c = LeagueDB.new 
+	 	c.champion = game.champion
+	 	c.outcome = game.outcome
+	 	c.length = game.length
+	 	c.kills = game.kills
+	 	c.deaths = game.deaths
+	 	c.assists = game.assists
+	 	c.gold = game.gold
+	 	c.minions = game.minions
+	 	c.experience = game.experience
+	 	c.save
+	end
+
+end
+
+z = LeagueDB.all :order => :id.asc
+# z = LeagueDB.first(:champion => "Vladimir", :outcome => "Won Game")
+
+z.each do |x|
+	puts x.champion
+	# puts x.champion + " " + x.length + " " + x.kills
+	# puts x.kills
+	# puts x.deaths
+	# puts x.assists
+	# puts x.gold
+	# puts x.minions
+	# puts x.experience
+end
+
+
+
 
