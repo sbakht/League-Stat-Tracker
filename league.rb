@@ -1,11 +1,10 @@
 require 'nokogiri'
 require 'open-uri'
-require 'data_mapper'
+require "sequel"
 
 class Game
 
-	attr_reader :champion, :outcome, :length, :kills, :assists, :deaths,
-	:gold, :minions, :experience
+	attr_reader :champion, :outcome, :length, :kills, :assists, :deaths, :gold, :minions, :experience
 
 	def initialize(champion, outcome, length)
 		@champion = champion
@@ -39,68 +38,69 @@ class Game
 
 end
 
-# Get a Nokogiri::HTML::Document for the page we’re interested in...
 
-doc = Nokogiri::HTML(open('http://www.elophant.com/league-of-legends/summoner/na/24174733/recent-games'))
+DB = Sequel.connect('sqlite://league.db')
 
-# Do funky things with it using Nokogiri::XML::Node methods...
+playerids = {'IWANTHOTDOG' => '24174733', 'Sealiest Seal' => '41229298'}
 
-DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/league.db")
+playerids.each do |playername, playerid|
+	doc = Nokogiri::HTML(open('http://www.elophant.com/league-of-legends/summoner/na/' + playerid + '/recent-games'))
 
-class LeagueDB
-	include DataMapper::Resource
-	property :id, Serial
-	property :champion, String, :required => true
-	property :outcome, String
-	property :length, String
-	property :kills, Integer
-	property :deaths, Integer
-	property :assists, Integer
-	property :gold, String
-	property :minions, Integer
-	property :experience, String
+	playerid = playerid.intern
 
-end
+	# connect to an in-memory database
+	# DB = Sequel.sqlite
 
-DataMapper.finalize.auto_upgrade!
-
-
-gameData = doc.css('.box')
-
-10.times do |i|
- 	champion = gameData[i+2].css('.title').text
- 	outcome = gameData[i+2].css('.game-info span').select{ |g| g.text.include?("Match")  }[0].text
- 	length = gameData[i+2].css('.game-info span').select{ |g| g.text.include?(":")  }[0].text
-
- 	kills = gameData[i+2].css('.kills span').text.match(/\d+/)[0].to_i # returns just # of kills
- 	deaths = gameData[i+2].css('.deaths span').text.match(/\d+/)[0].to_i
- 	assists = gameData[i+2].css('.assists span').text.match(/\d+/)[0].to_i
-
- 	scores = gameData[i+2].css('.scores span').first(3) #Gold, Minions, Experience
- 	gold = scores[0].text
- 	minions = scores[1].text
- 	experience = scores[2].text
-
-
- 	game = Game.new(champion, outcome, length)
- 	game.KDA(kills, deaths, assists)
- 	game.score(gold, minions, experience)
-
- 	#Checks if a game with these stats already exist, assuming that it is the same game when all these stats are the same
- 	if !LeagueDB.first(:champion => game.champion, :outcome => game.outcome, :kills => game.kills, :deaths => game.deaths, :assists => game.assists)
-	 	c = LeagueDB.new 
-	 	c.champion = game.champion
-	 	c.outcome = game.outcome
-	 	c.length = game.length
-	 	c.kills = game.kills
-	 	c.deaths = game.deaths
-	 	c.assists = game.assists
-	 	c.gold = game.gold
-	 	c.minions = game.minions
-	 	c.experience = game.experience
-	 	c.save
-
-	 	game.print
+	# create an items table
+	if !DB.table_exists? playerid
+		DB.create_table playerid do
+		  primary_key :id
+		  String :champion
+		  String :outcome
+		  String :length
+		  Integer :kills
+		  Integer :deaths
+		  Integer :assists
+		  String :gold
+		  Integer :minions
+		  String :experience
+		end
 	end
 
+	gameData = doc.css('.box')
+
+	10.times do |i|
+	 	champion = gameData[i+2].css('.title').text
+	 	outcome = gameData[i+2].css('.game-info span').select{ |g| g.text.include?("Match")  }[0].text
+	 	length = gameData[i+2].css('.game-info span').select{ |g| g.text.include?(":")  }[0].text
+
+	 	kills = gameData[i+2].css('.kills span').text.match(/\d+/)[0].to_i # returns just # of kills
+	 	deaths = gameData[i+2].css('.deaths span').text.match(/\d+/)[0].to_i
+	 	assists = gameData[i+2].css('.assists span').text.match(/\d+/)[0].to_i
+
+	 	scores = gameData[i+2].css('.scores span').first(3) #Gold, Minions, Experience
+	 	gold = scores[0].text
+	 	minions = scores[1].text
+	 	experience = scores[2].text
+
+
+	 	game = Game.new(champion, outcome, length)
+	 	game.KDA(kills, deaths, assists)
+	 	game.score(gold, minions, experience)
+
+	 	#Checks if a game with these stats already exist, assuming that it is the same game when all these stats are the same
+	 	c = DB[playerid]
+	 	if !c.first(:champion => game.champion, :outcome => game.outcome, :kills => game.kills, :deaths => game.deaths, :assists => game.assists)
+		 	
+		 	c.insert(:champion => game.champion, :champion => game.champion, :outcome => game.outcome, :length => game.length,
+		 		:kills => game.kills, :deaths => game.deaths, :assists => game.assists, :gold => game.gold, :minions => game.minions,
+		 		:experience => game.experience)
+
+		 	game.print
+		end
+
+	end
+
+	# posts = DB[playerid]
+	# puts posts.all
 end
