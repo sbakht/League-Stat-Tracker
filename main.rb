@@ -12,6 +12,9 @@ get '/' do
 	@post = posts.all
 	erb :main
 end
+get '/graphtest' do
+	erb :graphtest
+end
 
 get '/:playerid' do
 	@playerid = params[:playerid]
@@ -36,6 +39,6 @@ end
 
 post '/plswork' do
 	require 'json'
-	return DB[params[:playerid].intern].where(:champion => 'Jarvan IV').all.to_json
+	return DB[params[:playerid].intern].where(:champion => ['Caitlyn','Twitch']).all.to_json
 	return DB[params[:playerid].intern].all.to_json
 end

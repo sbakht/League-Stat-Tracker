@@ -1,0 +1,69 @@
+<html>
+<head>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="js/highcharts.js"></script>
+    <!-- <script type="text/javascript" src="/js/themes/gray.js"></script> -->
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+		  	var champion = "Twitch";
+		  	// $.post("/plswork",{playerid: "41229298", herp: champion},
+		  	$.post("/plswork",{playerid: "24174733", herp: champion},
+		  		function(data,status) {
+		  			data = JSON.parse(data);
+		  			console.dir(data);
+
+  					var names = new Array();
+  					var dataPoints = new Array();
+  					var length = new Array();
+					for(i = 0; i < data.length; i++) {
+						names.push(data[i].champion);
+						dataPoints.push(data[i].minions);
+						length.push(data[i]["length"]);
+					}
+		  			document.getElementById("para").innerHTML = data[0]["length"];
+					graphfnc(names,dataPoints, length.reverse())
+		  		})
+
+		  	function graphfnc(names,minions,length) {
+		  		i = 0
+			    $('#container').highcharts({
+			        chart: {
+			            type: 'bar'
+			        },
+			        title: {
+			            text: 'Minions Killed'
+			        },
+			        xAxis: {
+			            categories: names
+			        },
+			        yAxis: {
+			            title: {
+			                text: 'Champion'
+			            }
+			        },
+			        series: [{
+			        	name: 'Minions Killed',
+			            data: minions
+			        }],
+			        tooltip: {
+					    formatter: function() {
+					        return 'Minion Kills: <b>' + this.y + ' </b><br>Game Length: <b>' + length[this.point.x] + '</b>';
+					    }
+					}
+			    });
+			}
+
+		  });
+  	</script>
+
+
+
+</head>
+
+<body>
+	<div id="container" style="width:100%; height:400px;"></div>
+	<p id="para">LOL</p>
+</body>
+
+</html>
