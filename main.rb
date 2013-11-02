@@ -7,12 +7,19 @@ DB = Sequel.connect('sqlite://league.db')
 
 
 get '/' do
-	updateStats
+	#updateStats
 	posts = DB["24174733".intern]
 	@post = posts.all
 	erb :main
 end
 
+get '/:playerid' do
+	@playerid = params[:playerid]
+	@playerStats = DB[params[:playerid].intern]
+	#@playerStats = @playerStats.select(:outcome).where(:champion => 'Twitch').all
+	#@playerStats = @playerStats.all
+	erb :playerpage
+end
 
 
 helpers do  
@@ -25,4 +32,9 @@ Thread.new do # trivial example work thread
   	sleep 3600
     updateStats
   end
+end
+
+post '/plswork' do
+	require 'json'
+	return DB[params[:playerid].intern].select(:outcome).where(:champion => params[:herp]).all.to_json
 end
