@@ -36,5 +36,6 @@ end
 
 post '/plswork' do
 	require 'json'
-	return DB[params[:playerid].intern].select(:outcome).where(:champion => params[:herp]).all.to_json
+	return DB[params[:playerid].intern].where(:champion => 'Jarvan IV').all.to_json
+	return DB[params[:playerid].intern].all.to_json
 end
