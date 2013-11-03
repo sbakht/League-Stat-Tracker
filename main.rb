@@ -39,6 +39,8 @@ end
 
 post '/plswork' do
 	require 'json'
-	return DB[params[:playerid].intern].where(:champion => ['Caitlyn','Twitch']).all.to_json
-	return DB[params[:playerid].intern].all.to_json
+	if params[:champion] == "All" || params[:champion] == ""
+		return DB[params[:playerid].intern].all.to_json
+	end
+	return DB[params[:playerid].intern].where(:champion => params[:champion]).all.to_json
 end

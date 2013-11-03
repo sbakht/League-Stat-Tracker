@@ -1,14 +1,22 @@
+<!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf8">
+	<title>LOL Stats</title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="js/highcharts.js"></script>
     <!-- <script type="text/javascript" src="/js/themes/gray.js"></script> -->
 
 	<script type="text/javascript">
 		$(document).ready(function(){
-		  	var champion = "Twitch";
+			$("form").submit(function(){
+		  	var champion = $("input[name=inputchamp]").val()
+		  	testdata = $("#datatype").val()
+		  	tooltest = $("#tooltip").val()
 		  	// $.post("/plswork",{playerid: "41229298", herp: champion},
-		  	$.post("/plswork",{playerid: "24174733", herp: champion},
+		  	$.post("/plswork",{playerid: "24174733", champion: champion},
 		  		function(data,status) {
 		  			data = JSON.parse(data);
 		  			console.dir(data);
@@ -16,16 +24,51 @@
   					var names = new Array();
   					var dataPoints = new Array();
   					var length = new Array();
+  					var test = new Array();
+  					var tool = new Array();
 					for(i = 0; i < data.length; i++) {
 						names.push(data[i].champion);
 						dataPoints.push(data[i].minions);
 						length.push(data[i]["length"]);
+						test.push(data[i][testdata]);
+						for(x = 0; x < tooltest.length; x++) {
+							switch(tooltest[x]) {
+								case "kills":
+									if(tool[i] == undefined) {
+										tool[i] = "";
+									}
+									tool[i] += ("<b>Kills:</b> " + data[i][tooltest[x]]) + '<br>';
+									break;
+								case "deaths":
+									if(tool[i] == undefined) {
+										tool[i] = "";
+									}
+									tool[i] += ("<b>Deaths:</b> " + data[i][tooltest[x]]) + '<br>';
+									break;
+								case "assists":
+									if(tool[i] == undefined) {
+										tool[i] = "";
+									}
+									tool[i] += ("<b>Assists:</b> " + data[i][tooltest[x]]) + '<br>';
+									break;
+								case "minions":
+									if(tool[i] == undefined) {
+										tool[i] = "";
+									}
+									tool[i] += ("<b>Minions:</b> " + data[i][tooltest[x]]) + '<br>';
+									break;
+								default:
+									tool.push("default");
+							}
+						}
 					}
 		  			document.getElementById("para").innerHTML = data[0]["length"];
-					graphfnc(names,dataPoints, length.reverse())
-		  		})
+					graphfnc(names,dataPoints, length, test,tool)
+	  		})
+	  		return false;
+		  });
 
-		  	function graphfnc(names,minions,length) {
+		  	function graphfnc(names,minions,length,test,tool) {
 		  		i = 0
 			    $('#container').highcharts({
 			        chart: {
@@ -44,11 +87,12 @@
 			        },
 			        series: [{
 			        	name: 'Minions Killed',
-			            data: minions
+			            data: test
 			        }],
 			        tooltip: {
 					    formatter: function() {
-					        return 'Minion Kills: <b>' + this.y + ' </b><br>Game Length: <b>' + length[this.point.x] + '</b>';
+					        return tool[this.point.x];
+					        // return 'Minion Kills: <b>' + this.y + '<br>' + tool[this.point.x];
 					    }
 					}
 			    });
@@ -63,6 +107,22 @@
 
 <body>
 	<div id="container" style="width:100%; height:400px;"></div>
+		<form post="#">
+		<<input type="text" name="inputchamp" placeholder="Champion&hellip;">
+		<select id="datatype">
+			<option value="kills">Kills</option>
+			<option value="deaths">Deaths</option>
+			<option value="assists">Assists</option>
+			<option value="minions">Minions</option>
+		</select>
+		<select id="tooltip" multiple>
+			<option value="kills">Kills</option>
+			<option value="deaths">Deaths</option>
+			<option value="assists">Assists</option>
+			<option value="minions">Minions</option>
+		</select>
+		<button type="submit">Submit</button>
+	</form>
 	<p id="para">LOL</p>
 </body>
 
