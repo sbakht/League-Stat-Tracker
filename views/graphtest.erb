@@ -15,22 +15,33 @@
 		  	var champion = $("input[name=inputchamp]").val()
 		  	testdata = $("#datatype").val()
 		  	tooltest = $("#tooltip").val()
-		  	// $.post("/plswork",{playerid: "41229298", herp: champion},
-		  	$.post("/plswork",{playerid: "24174733", champion: champion},
+		  	$.post("/plswork",{playerid: "41229298", champion: champion},
+		  	// $.post("/plswork",{playerid: "24174733", champion: champion},
 		  		function(data,status) {
 		  			data = JSON.parse(data);
 		  			console.dir(data);
 
   					var names = new Array();
   					var dataPoints = new Array();
-  					var length = new Array();
   					var test = new Array();
   					var tool = new Array();
+  					switch(testdata) {
+  						case "kills":
+  							text = "Champions Killed"
+  							break;
+  						case "deaths":
+  							text = "Deaths"
+  							break;
+  						case "assists":
+  							text = "Assists"
+  							break;
+  						case "minions":
+  							text = "Minions Killed"
+  							break;		
+  					}
 					for(i = 0; i < data.length; i++) {
 						names.push(data[i].champion);
-						dataPoints.push(data[i].minions);
-						length.push(data[i]["length"]);
-						test.push(data[i][testdata]);
+						dataPoints.push(data[i][testdata]);
 						for(x = 0; x < tooltest.length; x++) {
 							switch(tooltest[x]) {
 								case "kills":
@@ -57,37 +68,43 @@
 									}
 									tool[i] += ("<b>Minions:</b> " + data[i][tooltest[x]]) + '<br>';
 									break;
+								case "length":
+									if(tool[i] == undefined) {
+										tool[i] = "";
+									}
+									tool[i] += ("<b>Length:</b> " + data[i][tooltest[x]]) + '<br>';
+									break;
 								default:
 									tool.push("default");
 							}
 						}
 					}
 		  			document.getElementById("para").innerHTML = data[0]["length"];
-					graphfnc(names,dataPoints, length, test,tool)
+					graphfnc(text,names,dataPoints,tool);
 	  		})
 	  		return false;
 		  });
 
-		  	function graphfnc(names,minions,length,test,tool) {
+		  	function graphfnc(text,names,dataPoints,tool) {
 		  		i = 0
 			    $('#container').highcharts({
 			        chart: {
 			            type: 'bar'
 			        },
 			        title: {
-			            text: 'Minions Killed'
+			            text: text
 			        },
 			        xAxis: {
 			            categories: names
 			        },
-			        yAxis: {
-			            title: {
-			                text: 'Champion'
-			            }
-			        },
+			        // yAxis: {
+			            // title: {
+			                // text: 'Champion'
+			            // }
+			        // },
 			        series: [{
-			        	name: 'Minions Killed',
-			            data: test
+			        	name: text,
+			            data: dataPoints
 			        }],
 			        tooltip: {
 					    formatter: function() {
@@ -120,6 +137,7 @@
 			<option value="deaths">Deaths</option>
 			<option value="assists">Assists</option>
 			<option value="minions">Minions</option>
+			<option value="length">Length</option>
 		</select>
 		<button type="submit">Submit</button>
 	</form>
