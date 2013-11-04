@@ -37,8 +37,13 @@ class Game
 	end
 
 end
-	
-DB = Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://#{Dir.pwd}/league.db')
+
+production = true
+if production
+	DB = Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://league.db')
+else 
+	DB = Sequel.connect('sqlite://league.db')
+end
 
 def updateStats
 

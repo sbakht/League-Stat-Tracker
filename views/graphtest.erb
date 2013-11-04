@@ -19,8 +19,9 @@
 		  	testdata = $("#datatype").val()
 		  	tooltest = $("#tooltip").val()
 		  	graphType = $("#graphtype").val()
+		  	playerid = $("#playerid").val()
 		  	// $.post("/plswork",{playerid: "41229298", champion: champion},
-		  	$.post("/plswork",{playerid: "24174733", champion: champion},
+		  	$.post("/plswork",{playerid: playerid, champion: champion},
 		  		function(data,status) {
 		  			data = JSON.parse(data);
 		  			//console.dir(data);
@@ -137,7 +138,11 @@
 
 <body>
 	<div id="container" style="width:100%; height:400px;"></div>
-		<form post="#">
+	<form post="#">
+		<select id="playerid">
+			<option value="24174733">IWANTHOTDOG</option>
+			<option value="41229298">Sealiest Seal</option>
+		</select> 
 		<input id="tags" type="text" name="inputchamp" placeholder="Champion&hellip;">
 		<select id="datatype" multiple>
 			<option value="kills">Kills</option>

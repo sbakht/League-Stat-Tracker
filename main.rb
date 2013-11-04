@@ -1,10 +1,15 @@
 require 'sinatra'
-#require 'sinatra/reloader'
 require 'sequel'
 require_relative 'updateStats'
 
-DB = Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://#{Dir.pwd}/league.db')
 
+production = true
+if production
+	DB = Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://league.db')
+else 
+	require 'sinatra/reloader'
+	DB = Sequel.connect('sqlite://league.db')
+end
 
 get '/' do
 	updateStats
