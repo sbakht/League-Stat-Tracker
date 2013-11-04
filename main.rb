@@ -3,14 +3,14 @@ require 'sinatra'
 require 'sequel'
 require_relative 'updateStats'
 
-DB = Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://league.db')
-# DB = Sequel.connect('sqlite://league.db')
+# Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://league.db')
+DB = Sequel.connect('postgres://stats.db')
 
 
 get '/' do
 	#updateStats
-	posts = DB["24174733".intern]
-	@post = posts.all
+	#posts = DB["24174733".intern]
+	#@post = posts.all
 	erb :main
 end
 get '/graphtest' do
