@@ -1,9 +1,10 @@
 require 'sinatra'
-require 'sinatra/reloader'
+#require 'sinatra/reloader'
 require 'sequel'
 require_relative 'updateStats'
 
-DB = Sequel.connect('sqlite://league.db')
+DB = Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://league.db')
+# DB = Sequel.connect('sqlite://league.db')
 
 
 get '/' do
