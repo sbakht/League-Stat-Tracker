@@ -45,7 +45,7 @@ def updateStats
 	playerids = {'IWANTHOTDOG' => '24174733', 'Sealiest Seal' => '41229298'}
 
 	playerids.each do |playername, playerid|
-		doc = Nokogiri::HTML(open('http://www.elophant.com/league-of-legends/summoner/na/' + playerid + '/recent-games'))
+		#doc = Nokogiri::HTML(open('http://www.elophant.com/league-of-legends/summoner/na/' + playerid + '/recent-games'))
 
 		playerid = playerid.intern
 
@@ -84,10 +84,9 @@ def updateStats
 		 	minions = scores[1].text
 		 	experience = scores[2].text
 
-
-		 	game = Game.new(champion, outcome, length)
-		 	game.KDA(kills, deaths, assists)
-		 	game.score(gold, minions, experience)
+		 	game = Game.new('Twitch', "Won Match", "35:07")
+		 	game.KDA(12, 6, 11)
+		 	game.score("13.9K", 148, "20.1K")
 
 		 	#Checks if a game with these stats already exist, assuming that it is the same game when all these stats are the same
 		 	c = DB[playerid]

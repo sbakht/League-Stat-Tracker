@@ -1,5 +1,5 @@
 require 'sinatra'
-#require 'sinatra/reloader'
+require 'sinatra/reloader'
 require 'sequel'
 require_relative 'updateStats'
 
@@ -11,6 +11,7 @@ get '/' do
 	#updateStats
 	#posts = DB["24174733".intern]
 	#@post = posts.all
+	updateStats
 	erb :main
 end
 get '/graphtest' do
