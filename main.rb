@@ -8,7 +8,7 @@ DB = Sequel.connect('sqlite://league.db')
 
 
 get '/' do
-	#updateStats
+	updateStats
 	posts = DB["24174733".intern]
 	@post = posts.all
 	erb :main
@@ -40,8 +40,10 @@ end
 
 post '/plswork' do
 	require 'json'
+	# champions = params[:champion].chomp(' ').chomp(',')
+	champions = params[:champion].split(/\s*,\s*/) #turn into array by splitting on spaces and commas
 	if params[:champion] == "All" || params[:champion] == ""
 		return DB[params[:playerid].intern].all.to_json
 	end
-	return DB[params[:playerid].intern].where(:champion => params[:champion]).all.to_json
+	return DB[params[:playerid].intern].where(:champion => champions).all.to_json
 end

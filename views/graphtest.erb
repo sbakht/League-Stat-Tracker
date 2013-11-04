@@ -5,8 +5,11 @@
 	<title>LOL Stats</title>
 	<link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet"  />
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<script src="js/highcharts.js"></script>
+	<script src="js/autocomplete.js"></script>
     <script type="text/javascript" src="/js/themes/grid.js"></script>
 
 	<script type="text/javascript">
@@ -89,7 +92,6 @@
 					for(y = 0; y < testdata.length; y++) {
 						newPoints[y] = {name : testdata[y], data : dataPoints[y]}
 					}
-		  			document.getElementById("para").innerHTML = data[0]["length"];
 					graphfnc(text,names,dataPoints,tool,graphType,newPoints);
 	  		})
 	  		return false;
@@ -136,7 +138,7 @@
 <body>
 	<div id="container" style="width:100%; height:400px;"></div>
 		<form post="#">
-		<<input type="text" name="inputchamp" placeholder="Champion&hellip;">
+		<input id="tags" type="text" name="inputchamp" placeholder="Champion&hellip;">
 		<select id="datatype" multiple>
 			<option value="kills">Kills</option>
 			<option value="deaths">Deaths</option>
@@ -156,7 +158,6 @@
 		</select>
 		<button type="submit">Submit</button>
 	</form>
-	<p id="para">LOL</p>
 </body>
 
 </html>
