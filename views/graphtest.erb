@@ -15,17 +15,20 @@
 		  	var champion = $("input[name=inputchamp]").val()
 		  	testdata = $("#datatype").val()
 		  	tooltest = $("#tooltip").val()
-		  	$.post("/plswork",{playerid: "41229298", champion: champion},
-		  	// $.post("/plswork",{playerid: "24174733", champion: champion},
+		  	graphType = $("#graphtype").val()
+		  	// $.post("/plswork",{playerid: "41229298", champion: champion},
+		  	$.post("/plswork",{playerid: "24174733", champion: champion},
 		  		function(data,status) {
 		  			data = JSON.parse(data);
-		  			console.dir(data);
+		  			//console.dir(data);
 
   					var names = new Array();
-  					var dataPoints = new Array();
+  					var dataPoints = new Array([],[],[],[]);
   					var test = new Array();
   					var tool = new Array();
-  					switch(testdata) {
+  					console.dir(dataPoints);
+
+  					switch(testdata[0]) {
   						case "kills":
   							text = "Champions Killed"
   							break;
@@ -41,7 +44,9 @@
   					}
 					for(i = 0; i < data.length; i++) {
 						names.push(data[i].champion);
-						dataPoints.push(data[i][testdata]);
+						for(y = 0; y < testdata.length; y++) {
+							dataPoints[y].push(data[i][testdata[y]]);
+						}
 						for(x = 0; x < tooltest.length; x++) {
 							switch(tooltest[x]) {
 								case "kills":
@@ -79,17 +84,22 @@
 							}
 						}
 					}
+					console.dir(dataPoints)
+					var newPoints = [{}];
+					for(y = 0; y < testdata.length; y++) {
+						newPoints[y] = {name : testdata[y], data : dataPoints[y]}
+					}
 		  			document.getElementById("para").innerHTML = data[0]["length"];
-					graphfnc(text,names,dataPoints,tool);
+					graphfnc(text,names,dataPoints,tool,graphType,newPoints);
 	  		})
 	  		return false;
 		  });
 
-		  	function graphfnc(text,names,dataPoints,tool) {
+		  	function graphfnc(text,names,dataPoints,tool,graphType,newPoints) {
 		  		i = 0
 			    $('#container').highcharts({
 			        chart: {
-			            type: 'bar'
+			            type: graphType
 			        },
 			        title: {
 			            text: text
@@ -102,10 +112,11 @@
 			                // text: 'Champion'
 			            // }
 			        // },
-			        series: [{
-			        	name: text,
-			            data: dataPoints
-			        }],
+			        // series: [{
+			        // 	name: text,
+			        //     data: dataPoints[0]
+			        // }],
+			        series: newPoints,
 			        tooltip: {
 					    formatter: function() {
 					        return tool[this.point.x];
@@ -126,7 +137,7 @@
 	<div id="container" style="width:100%; height:400px;"></div>
 		<form post="#">
 		<<input type="text" name="inputchamp" placeholder="Champion&hellip;">
-		<select id="datatype">
+		<select id="datatype" multiple>
 			<option value="kills">Kills</option>
 			<option value="deaths">Deaths</option>
 			<option value="assists">Assists</option>
@@ -138,6 +149,10 @@
 			<option value="assists">Assists</option>
 			<option value="minions">Minions</option>
 			<option value="length">Length</option>
+		</select>
+		<select id="graphtype">
+			<option value="line">Line Graph</option>
+			<option value="bar">Bar Graph</option>
 		</select>
 		<button type="submit">Submit</button>
 	</form>

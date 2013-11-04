@@ -4,14 +4,13 @@ require 'sequel'
 require_relative 'updateStats'
 
 # Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://league.db')
-DB = Sequel.connect('postgres://stats.db')
+DB = Sequel.connect('sqlite://league.db')
 
 
 get '/' do
 	#updateStats
-	#posts = DB["24174733".intern]
-	#@post = posts.all
-	updateStats
+	posts = DB["24174733".intern]
+	@post = posts.all
 	erb :main
 end
 get '/graphtest' do
