@@ -2,7 +2,9 @@ $(function() {
     var availableTags = [
       "Aatrox",
       "Caitlyn",
+      "Gragas",
       "Jinx",
+      "Lulu",
       "Nami",
       "Sona",
       "Soraka",

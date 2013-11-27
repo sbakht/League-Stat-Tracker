@@ -1,19 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.3.5)
-    data_objects (0.10.13)
-      addressable (~> 2.1)
-    dm-core (1.2.1)
-      addressable (~> 2.3)
-    dm-do-adapter (1.2.0)
-      data_objects (~> 0.10.6)
-      dm-core (~> 1.2.0)
-    dm-postgres-adapter (1.2.0)
-      dm-do-adapter (~> 1.2.0)
-      do_postgres (~> 0.10.6)
-    do_postgres (0.10.13-x86-mingw32)
-      data_objects (= 0.10.13)
     mini_portile (0.5.0)
     nokogiri (1.6.0-x86-mingw32)
       mini_portile (~> 0.5.0)
@@ -32,7 +19,6 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  dm-postgres-adapter
   nokogiri
   pg
   sequel

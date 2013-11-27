@@ -28,11 +28,13 @@
 
   					var names = new Array();
   					var dataPoints = new Array([],[],[],[]);
+  					var dataPointsWithOutcomeColor = new Array([],[],[],[]);
   					var test = new Array();
   					var tool = new Array();
+  					var outcome = new Array();
   					console.dir(dataPoints);
 
-  					switch(testdata[0]) {
+  					switch(testdata[0]) { //Sets title for graphs from first selected #datatype to show
   						case "kills":
   							text = "Champions Killed"
   							break;
@@ -48,8 +50,16 @@
   					}
 					for(i = 0; i < data.length; i++) {
 						names.push(data[i].champion);
+						outcome.push(data[i].outcome);
+						if(data[i].outcome == "Won Match") {
+							color = "green"
+						}else{
+							color = "red"
+						}
+
 						for(y = 0; y < testdata.length; y++) {
 							dataPoints[y].push(data[i][testdata[y]]);
+							dataPointsWithOutcomeColor[y].push({ y : data[i][testdata[y]], marker : { fillColor: color} });
 						}
 						for(x = 0; x < tooltest.length; x++) {
 							switch(tooltest[x]) {
@@ -83,22 +93,34 @@
 									}
 									tool[i] += ("<b>Length:</b> " + data[i][tooltest[x]]) + '<br>';
 									break;
+								case "outcome":
+									if(tool[i] == undefined) {
+										tool[i] = "";
+									}
+									tool[i] += ("<b>Outcome:</b> " + data[i][tooltest[x]]) + '<br>';
+									break;
 								default:
 									tool.push("default");
 							}
 						}
 					}
 					console.dir(dataPoints)
-					var newPoints = [{}];
+					var points = [{}];
+					console.dir(testdata)
 					for(y = 0; y < testdata.length; y++) {
-						newPoints[y] = {name : testdata[y], data : dataPoints[y]}
+						//points[y] = {name : testdata[y], data : dataPoints[y]} //No outcome color
+						points[y] = {name : testdata[y], data : dataPointsWithOutcomeColor[y]}
+
+
+
+
 					}
-					graphfnc(text,names,dataPoints,tool,graphType,newPoints);
+					graphfnc(text,names,dataPoints,tool,graphType,points);
 	  		})
 	  		return false;
 		  });
 
-		  	function graphfnc(text,names,dataPoints,tool,graphType,newPoints) {
+		  	function graphfnc(text,names,dataPoints,tool,graphType,points) {
 		  		i = 0
 			    $('#container').highcharts({
 			        chart: {
@@ -119,7 +141,7 @@
 			        // 	name: text,
 			        //     data: dataPoints[0]
 			        // }],
-			        series: newPoints,
+			        series: points,
 			        tooltip: {
 					    formatter: function() {
 					        return tool[this.point.x];
@@ -156,6 +178,7 @@
 			<option value="assists">Assists</option>
 			<option value="minions">Minions</option>
 			<option value="length">Length</option>
+			<option value="outcome">Outcome</option>
 		</select>
 		<select id="graphtype">
 			<option value="line">Line Graph</option>
