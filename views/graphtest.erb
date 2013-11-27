@@ -99,6 +99,12 @@
 									}
 									tool[i] += ("<b>Outcome:</b> " + data[i][tooltest[x]]) + '<br>';
 									break;
+								case "champion":
+									if(tool[i] == undefined) {
+										tool[i] = "";
+									}
+									tool[i] += ("<b>Champion:</b> " + data[i][tooltest[x]]) + '<br>';
+									break;
 								default:
 									tool.push("default");
 							}
@@ -173,6 +179,7 @@
 			<option value="minions">Minions</option>
 		</select>
 		<select id="tooltip" multiple>
+			<option value="champion">Champion</option>
 			<option value="kills">Kills</option>
 			<option value="deaths">Deaths</option>
 			<option value="assists">Assists</option>
