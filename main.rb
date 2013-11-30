@@ -71,14 +71,14 @@ get '/coursera' do
 	end
 	@courses = DB[:courses].reverse_order(:id).all #reverses order so latest courses at top
 	@emails = DB[:emails].all
-	erb :graphtest
+	erb :coursera
 end
 
 post '/coursera' do
 	@courses = DB[:courses].reverse_order(:id).all
 	@categorySelection = params[:category]
 	@emails = DB[:emails].all
-	erb :main
+	erb :coursera
 	# redirect '/'
 end
 
@@ -88,7 +88,7 @@ end
 
 get '/testemail' do
 	emailUsers
-	redirect '/'
+	redirect '/coursera'
 end
 
 post '/emailSubmit' do
