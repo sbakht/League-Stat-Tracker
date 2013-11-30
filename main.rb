@@ -96,6 +96,5 @@ post '/emailSubmit' do
 		e = DB[:emails]
 		e.insert(:email => params[:newemail])
 	end
-	flash[:notice] = "Your email has been added to the mailing list!"
 	redirect '/coursera'
 end
