@@ -175,6 +175,7 @@
 					}
 			    });
 			}
+			$('#container').highcharts({});
 
 		  });
   	</script>
@@ -194,18 +195,18 @@
 		<form post="#" style="padding-top:5px;">
 			<div class="form-element">
 				<label>Username:</label>
-				<select id="playerid">
+				<select id="playerid" required>
 					<option>iwanthotdogs</option>
 					<option>Sealiest Seal</option>
 				</select>
 			</div>
 			<div class="form-element">
-				<label>Champions:</label> 
+				<label>Champions:<br>(All by default)</label> 
 				<input id="tags" type="text" name="inputchamp" placeholder="Champion&hellip;">
 			</div>
 			<div class="form-element">
 				<label>Data Types:</label>
-				<select id="datatype" multiple>
+				<select id="datatype" multiple required>
 					<option value="kills">Kills</option>
 					<option value="deaths">Deaths</option>
 					<option value="assists">Assists</option>
@@ -214,7 +215,7 @@
 			</div>
 			<div class="form-element">
 				<label>Labels:</label>
-				<select id="tooltip" multiple>
+				<select id="tooltip" multiple required>
 					<option value="champion">Champion</option>
 					<option value="kills">Kills</option>
 					<option value="deaths">Deaths</option>
@@ -226,7 +227,7 @@
 			</div>
 			<div class="form-element">
 				<label>Graph Type:</label>
-				<select id="graphtype">
+				<select id="graphtype" required>
 					<option value="line">Line Graph</option>
 					<option value="bar">Bar Graph</option>
 				</select>
