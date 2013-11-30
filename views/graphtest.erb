@@ -51,7 +51,7 @@
   					var test = new Array();
   					var tool = new Array();
   					var outcome = new Array();
-  					console.dir(dataPoints);
+  					//console.dir(dataPoints);
 
   					switch(testdata[0]) { //Sets title for graphs from first selected #datatype to show
   						case "kills":
@@ -129,9 +129,9 @@
 							}
 						}
 					}
-					console.dir(dataPoints)
+					//console.dir(dataPoints)
 					var points = [{}];
-					console.dir(testdata)
+					//console.dir(testdata)
 					for(y = 0; y < testdata.length; y++) {
 						//points[y] = {name : testdata[y], data : dataPoints[y]} //No outcome color
 						points[y] = {name : testdata[y], data : dataPointsWithOutcomeColor[y]}
@@ -195,8 +195,8 @@
 			<div class="form-element">
 				<label>Username:</label>
 				<select id="playerid">
-					<option value="24174733">iwanthotdog</option>
-					<option value="41229298">Sealiest Seal</option>
+					<option>iwanthotdogs</option>
+					<option>Sealiest Seal</option>
 				</select>
 			</div>
 			<div class="form-element">

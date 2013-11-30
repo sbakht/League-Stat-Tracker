@@ -1,6 +1,7 @@
 require 'nokogiri'
 require 'open-uri'
-require "sequel"
+require 'sequel'
+require 'yaml'
 
 class Game
 
@@ -110,4 +111,12 @@ def updateStats
 		# posts = DB[playerid]
 		# puts posts.all
 	end
+end
+
+def idExists(username)
+	contents = YAML.load_file('username-id.yml')
+	if username.gsub(' ','_')
+		username.gsub!(' ','_').to_s
+	end
+	return contents[username.downcase]
 end

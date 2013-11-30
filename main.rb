@@ -37,9 +37,10 @@ end
 post '/plswork' do
 	require 'json'
 	# champions = params[:champion].chomp(' ').chomp(',')
+	playerid = idExists(params[:playerid]).to_s #changes from username to id
 	champions = params[:champion].split(/\s*,\s*/) #turn into array by splitting on spaces and commas
 	if params[:champion] == "All" || params[:champion] == ""
-		return DB[params[:playerid].intern].all.to_json
+		return DB[playerid.intern].all.to_json
 	end
 
 	champions.map! do |champ| champ[0].upcase + champ[1..-1].downcase end
