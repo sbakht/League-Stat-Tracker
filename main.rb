@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sequel'
 require_relative 'updateStats'
+require_relative 'myfunctions'
 
 
 production = true
@@ -10,6 +11,8 @@ else
 	require 'sinatra/reloader'
 	DB = Sequel.connect('sqlite://league.db')
 end
+
+NUM_DISPLAY_COURSES = 10
 
 get '/' do
 	updateStats
@@ -21,15 +24,6 @@ get '/graphtest' do
 	erb :graphtest
 end
 
-get '/:playerid' do
-	@playerid = params[:playerid]
-	@playerStats = DB[params[:playerid].intern]
-	#@playerStats = @playerStats.select(:outcome).where(:champion => 'Twitch').all
-	#@playerStats = @playerStats.all
-	erb :playerpage
-end
-
-
 helpers do  
     include Rack::Utils  
     alias_method :h, :escape_html  
@@ -39,6 +33,7 @@ Thread.new do # trivial example work thread
   while true do
   	sleep 3600
     updateStats
+    updateAndEmailDatabase(DB)
   end
 end
 
@@ -53,4 +48,54 @@ post '/plswork' do
 	champions.map! do |champ| champ[0].upcase + champ[1..-1].downcase end
 	puts champions
 	return DB[params[:playerid].intern].where(:champion => champions).all.to_json
+end
+
+
+########################################################### Coursera
+
+get '/coursera' do
+	if !DB.table_exists? :courses
+		DB.create_table :courses do
+			primary_key :id
+			String :title
+			String :link
+			String :categories
+		end
+	end
+
+	if !DB.table_exists? :emails
+		DB.create_table :emails do
+			primary_key :id
+			String :email
+		end
+	end
+	@courses = DB[:courses].reverse_order(:id).all #reverses order so latest courses at top
+	@emails = DB[:emails].all
+	erb :coursera
+end
+
+post '/coursera' do
+	@courses = DB[:courses].reverse_order(:id).all
+	@categorySelection = params[:category]
+	@emails = DB[:emails].all
+	erb :main
+	# redirect '/'
+end
+
+get '/update' do
+	updateAndEmailDatabase(DB)
+end
+
+get '/testemail' do
+	emailUsers
+	redirect '/'
+end
+
+post '/emailSubmit' do
+	if params[:newemail]
+		e = DB[:emails]
+		e.insert(:email => params[:newemail])
+	end
+	flash[:notice] = "Your email has been added to the mailing list!"
+	redirect '/coursera'
 end

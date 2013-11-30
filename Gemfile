@@ -3,4 +3,6 @@ ruby "1.9.3"
 gem 'sinatra', '1.4.3'
 gem 'sequel'
 gem 'nokogiri'
+gem 'json'
+gem 'pony'
 gem 'pg'
