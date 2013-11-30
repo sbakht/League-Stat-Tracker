@@ -15,12 +15,9 @@ end
 NUM_DISPLAY_COURSES = 10
 
 get '/' do
-	updateStats
-	posts = DB["24174733".intern]
-	@post = posts.all
-	erb :main
+	erb :home
 end
-get '/graphtest' do
+get '/league' do
 	erb :graphtest
 end
 
@@ -31,7 +28,7 @@ end
 
 Thread.new do # trivial example work thread
   while true do
-  	sleep 3600
+  	sleep 36000
     updateStats
     updateAndEmailDatabase(DB)
   end
