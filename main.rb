@@ -4,7 +4,7 @@ require_relative 'updateStats'
 require_relative 'myfunctions'
 
 
-production = false
+production = true
 if production
 	DB = Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://league.db')
 else 
