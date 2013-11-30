@@ -71,8 +71,7 @@ get '/coursera' do
 	end
 	@courses = DB[:courses].reverse_order(:id).all #reverses order so latest courses at top
 	@emails = DB[:emails].all
-	#erb :coursera
-	"test"
+	erb :graphtest
 end
 
 post '/coursera' do
