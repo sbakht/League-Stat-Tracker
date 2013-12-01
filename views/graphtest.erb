@@ -8,7 +8,7 @@
     <link href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet"  />
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-	<script src="js/highcharts.js"></script>
+	<script type="text/javascript" src="http://code.highcharts.com/stock/highstock.js"></script>
 	<script src="http://github.highcharts.com/master/modules/no-data-to-display.src.js"></script>
 	<script src="js/autocomplete.js"></script>
     <script type="text/javascript" src="/js/themes/grid.js"></script>
@@ -40,6 +40,8 @@
 		  	tooltest = $("#tooltip").val()
 		  	graphType = $("#graphtype").val()
 		  	playerid = $("#playerid").val()
+		  	scroll = $("#scrollbar").is(":checked")
+		  	console.dir(scroll)
 		  	// $.post("/plswork",{playerid: "41229298", champion: champion},
 		  	$.post("/plswork",{playerid: playerid, champion: champion},
 		  		function(data,status) {
@@ -137,16 +139,21 @@
 						//points[y] = {name : testdata[y], data : dataPoints[y]} //No outcome color
 						points[y] = {name : testdata[y], data : dataPointsWithOutcomeColor[y]}
 
+					} 
 
-
-
+					//Fix for extra number tick marks being appended on x axis. 12 prevents overflow while scrolling(test)
+					if(scroll == false || names.length < 12) {
+						maxLen = names.length - 1
+					}else{
+						maxLen = 12
 					}
-					graphfnc(text,names,dataPoints,tool,graphType,points);
+
+					graphfnc(text,names,tool,graphType,points,maxLen,scroll);
 	  		})
 	  		return false;
 		  });
 
-		  	function graphfnc(text,names,dataPoints,tool,graphType,points) {
+		  	function graphfnc(text,names,tool,graphType,points,maxLen,scroll) {
 		  		i = 0
 			    $('#container').highcharts({
 			        chart: {
@@ -156,7 +163,7 @@
 			            text: text
 			        },
 			        xAxis: {
-			            categories: names
+			            categories: names, min: 0, max: maxLen//max changes amount on screen for scrollbar(play around with it)
 			        },
 			        // yAxis: {
 			            // title: {
@@ -167,6 +174,9 @@
 			        // 	name: text,
 			        //     data: dataPoints[0]
 			        // }],
+			        scrollbar: {
+					    enabled: scroll //variable true/false
+					},
 			        series: points,
 			        tooltip: {
 					    formatter: function() {
@@ -202,7 +212,7 @@
 	    </div>
 	    <hr>
 
-		<div id="container" style="width:100%; height:400px;"></div>
+		<div id="container" style="height:400px;"></div>
 		<form post="#" style="padding-top:5px;">
 			<div class="form-element">
 				<label>Username:</label>
@@ -242,6 +252,10 @@
 					<option value="line">Line Graph</option>
 					<option value="bar">Bar Graph</option>
 				</select>
+			</div>
+			<div class="form-element">
+				<label>Scrollbar:</label>
+					<input id="scrollbar" type="checkbox" checked=true>
 			</div>
 			<button type="submit">Submit</button>
 		</form>
