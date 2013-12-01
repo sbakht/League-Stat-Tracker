@@ -9,6 +9,7 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<script src="js/highcharts.js"></script>
+	<script src="http://github.highcharts.com/master/modules/no-data-to-display.src.js"></script>
 	<script src="js/autocomplete.js"></script>
     <script type="text/javascript" src="/js/themes/grid.js"></script>
 	<style type="text/css">
@@ -175,7 +176,17 @@
 					}
 			    });
 			}
-			$('#container').highcharts({});
+    $('#container').highcharts({ //Placeholder chart on page load
+        title: {
+            text: 'Enter Information Below'
+        },
+        series: [{
+            type: 'line',
+            name: 'No data',  
+            data: []     
+        }],            
+
+    });
 
 		  });
   	</script>
@@ -201,7 +212,7 @@
 				</select>
 			</div>
 			<div class="form-element">
-				<label>Champion(s):<br>(All by default)</label> 
+				<label>Champion(s):<br><i style="font-size:90%;">(All by default)</i></label> 
 				<input id="tags" type="text" name="inputchamp" placeholder="Champions&hellip;">
 			</div>
 			<div class="form-element">

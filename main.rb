@@ -44,8 +44,7 @@ post '/plswork' do
 	end
 
 	champions.map! do |champ| champ[0].upcase + champ[1..-1].downcase end
-	puts champions
-	return DB[params[:playerid].intern].where(:champion => champions).all.to_json
+	return DB[playerid.intern].where(:champion => champions).all.to_json
 end
 
 
